@@ -180,6 +180,8 @@ async function loadWeather() {
 
                 const data = await response.json();
 
+console.log(data);
+
                 document.getElementById("temp").textContent =
                     `${Math.round(data.main.temp)}°F`;
 
@@ -187,9 +189,11 @@ async function loadWeather() {
                     data.weather[0].main;
             }
             catch (e) {
-                document.getElementById("condition").textContent =
-                    "Weather unavailable";
-            }
+    console.error(e);
+
+    document.getElementById("condition").textContent =
+        e.message;
+}
         },
         () => {
             document.getElementById("condition").textContent =
