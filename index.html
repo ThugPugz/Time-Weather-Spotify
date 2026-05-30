@@ -193,14 +193,9 @@ let isPlaying = false;
 
 async function toggleSpotify() {
 
-    const endpoint = isPlaying
-        ? "pause"
-        : "play";
-
     const response = await fetch(
-        `https://api.spotify.com/v1/me/player/${endpoint}`,
+        "https://api.spotify.com/v1/me",
         {
-            method: "PUT",
             headers: {
                 Authorization: `Bearer ${SPOTIFY_TOKEN}`
             }
@@ -212,12 +207,6 @@ async function toggleSpotify() {
     const text = await response.text();
     console.log(text);
 
-    if(response.ok){
-        isPlaying = !isPlaying;
-
-        document.getElementById("spotifyBtn").innerHTML =
-            isPlaying ? "❚❚" : "▶";
-    }
 }
 
 document
