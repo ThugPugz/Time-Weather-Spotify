@@ -155,10 +155,30 @@ function updateClock() {
 const WEATHER_API_KEY = "d9fb0d09df7205e25b09a79143da5aec";
 
 function loadWeather() {
-    document.getElementById("temp").textContent = "999";
-    document.getElementById("condition").textContent = "TEST";
-}
 
+    if (!navigator.geolocation) {
+        document.getElementById("condition").textContent =
+            "NO GPS";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        (position) => {
+            document.getElementById("temp").textContent = "GPS";
+            document.getElementById("condition").textContent =
+                "SUCCESS";
+        },
+
+        (error) => {
+            document.getElementById("temp").textContent =
+                `ERR ${error.code}`;
+            document.getElementById("condition").textContent =
+                error.message;
+        }
+
+    );
+}
 loadWeather();
 setInterval(loadWeather, 600000);
 
