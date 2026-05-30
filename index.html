@@ -158,18 +158,9 @@ const WEATHER_API_KEY =
 
 function loadWeather() {
 
-    document.getElementById("temp").textContent = "...";
-    document.getElementById("condition").textContent = "Loading";
-
-    fetch("https://ipapi.co/json/")
-    .then(r => r.json())
-    .then(loc => {
-
-        return fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${loc.latitude}&lon=${loc.longitude}&units=imperial&appid=${WEATHER_API_KEY}`
-        );
-
-    })
+    fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=40.7128&lon=-74.0060&units=imperial&appid=${WEATHER_API_KEY}`
+    )
     .then(r => r.json())
     .then(data => {
 
@@ -182,14 +173,11 @@ function loadWeather() {
     })
     .catch(err => {
 
-    document.getElementById("temp").textContent = "ERR";
+        document.getElementById("temp").textContent = "ERR";
+        document.getElementById("condition").textContent =
+            err.toString();
 
-    document.getElementById("condition").textContent =
-        err.toString();
-
-    console.error(err);
-
-});
+    });
 
 }
 
