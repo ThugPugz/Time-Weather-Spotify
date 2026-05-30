@@ -131,6 +131,7 @@ body {
 
 <script>
 // CLOCK
+alert("VERSION 123");
 document.getElementById("condition").textContent =
     "SCRIPT RUNNING";
 setInterval(updateClock, 1000);
@@ -154,40 +155,16 @@ function updateClock() {
 // WEATHER
 // WEATHER
 const WEATHER_API_KEY = "d9fb0d09df7205e25b09a79143da5aec";
-
+document.getElementById("temp").textContent = "HELLO";
+document.getElementById("condition").textContent = "WORLD";
 function loadWeather() {
 
-    navigator.geolocation.getCurrentPosition(
-
-        (position) => {
-            document.getElementById("temp").textContent =
-                position.coords.latitude.toFixed(4);
-
-            document.getElementById("condition").textContent =
-                position.coords.longitude.toFixed(4);
-        },
-
-        (error) => {
-            document.getElementById("temp").textContent =
-                `ERR ${error.code}`;
-
-            document.getElementById("condition").textContent =
-                error.message;
-        },
-
-        {
-            enableHighAccuracy: false,
-            timeout: 30000,
-            maximumAge: 600000
-        }
-
-    );
-}
+    
 
 loadWeather();
 loadWeather();
 setInterval(loadWeather, 600000);
-
+}
 
 // SPOTIFY
 const SPOTIFY_TOKEN = "YOUR_SPOTIFY_ACCESS_TOKEN";
