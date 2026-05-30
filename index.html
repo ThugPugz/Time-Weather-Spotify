@@ -131,7 +131,6 @@ body {
 
 <script>
 // CLOCK
-alert("VERSION 123");
 document.getElementById("condition").textContent =
     "SCRIPT RUNNING";
 setInterval(updateClock, 1000);
@@ -157,42 +156,44 @@ function updateClock() {
 const WEATHER_API_KEY =
     "d9fb0d09df7205e25b09a79143da5aec";
 
-document.getElementById("temp").textContent = "FETCH";
-document.getElementById("condition").textContent = "START";
+function loadWeather() {
 
-fetch("https://ipapi.co/json/")
-.then(r => r.json())
-.then(loc => {
+    document.getElementById("temp").textContent = "...";
+    document.getElementById("condition").textContent = "Loading";
 
-    document.getElementById("condition").textContent =
-        "LOCATION OK";
+    fetch("https://ipapi.co/json/")
+    .then(r => r.json())
+    .then(loc => {
 
-    return fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${loc.latitude}&lon=${loc.longitude}&units=imperial&appid=${WEATHER_API_KEY}`
-    );
+        return fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${loc.latitude}&lon=${loc.longitude}&units=imperial&appid=${WEATHER_API_KEY}`
+        );
 
-})
-.then(r => r.json())
-.then(data => {
+    })
+    .then(r => r.json())
+    .then(data => {
 
-    document.getElementById("temp").textContent =
-        Math.round(data.main.temp) + "°";
+        document.getElementById("temp").textContent =
+            Math.round(data.main.temp) + "°";
 
-    document.getElementById("condition").textContent =
-        data.weather[0].main;
+        document.getElementById("condition").textContent =
+            data.weather[0].main;
 
-})
-.catch(err => {
+    })
+    .catch(err => {
 
-    document.getElementById("temp").textContent =
-        "ERROR";
+        document.getElementById("temp").textContent = "--";
+        document.getElementById("condition").textContent =
+            "Weather Error";
 
-    document.getElementById("condition").textContent =
-        err.toString();
+        console.error(err);
 
-    console.error(err);
+    });
 
-});
+}
+
+loadWeather();
+setInterval(loadWeather, 600000);
 // SPOTIFY
 const SPOTIFY_TOKEN = "YOUR_SPOTIFY_ACCESS_TOKEN";
 
