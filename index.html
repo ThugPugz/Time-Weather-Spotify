@@ -157,26 +157,28 @@ const WEATHER_API_KEY = "d9fb0d09df7205e25b09a79143da5aec";
 
 function loadWeather() {
 
-    document.getElementById("condition").textContent =
-        "REQUESTING GPS";
-
     navigator.geolocation.getCurrentPosition(
 
         (position) => {
-            document.getElementById("temp").textContent = "GPS";
+            document.getElementById("temp").textContent =
+                position.coords.latitude.toFixed(4);
+
             document.getElementById("condition").textContent =
-                "SUCCESS";
+                position.coords.longitude.toFixed(4);
         },
 
         (error) => {
             document.getElementById("temp").textContent =
                 `ERR ${error.code}`;
+
             document.getElementById("condition").textContent =
                 error.message;
         },
 
         {
-            timeout: 5000
+            enableHighAccuracy: false,
+            timeout: 30000,
+            maximumAge: 600000
         }
 
     );
