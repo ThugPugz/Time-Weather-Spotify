@@ -154,10 +154,24 @@ function updateClock() {
 
 // WEATHER
 // WEATHER
+const WEATHER_API_KEY =
+    "d9fb0d09df7205e25b09a79143da5aec";
+
 document.getElementById("temp").textContent = "FETCH";
 document.getElementById("condition").textContent = "START";
 
-fetch("https://api.openweathermap.org/data/2.5/weather?lat=40.7128&lon=-74.0060&units=imperial&appid=d9fb0d09df7205e25b09a79143da5aec")
+fetch("https://ipapi.co/json/")
+.then(r => r.json())
+.then(loc => {
+
+    document.getElementById("condition").textContent =
+        "LOCATION OK";
+
+    return fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${loc.latitude}&lon=${loc.longitude}&units=imperial&appid=${WEATHER_API_KEY}`
+    );
+
+})
 .then(r => r.json())
 .then(data => {
 
@@ -170,13 +184,15 @@ fetch("https://api.openweathermap.org/data/2.5/weather?lat=40.7128&lon=-74.0060&
 })
 .catch(err => {
 
-    document.getElementById("temp").textContent = "FETCH ERR";
+    document.getElementById("temp").textContent =
+        "ERROR";
 
     document.getElementById("condition").textContent =
         err.toString();
 
-});
+    console.error(err);
 
+});
 // SPOTIFY
 const SPOTIFY_TOKEN = "YOUR_SPOTIFY_ACCESS_TOKEN";
 
