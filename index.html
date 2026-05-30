@@ -157,11 +157,8 @@ const WEATHER_API_KEY = "d9fb0d09df7205e25b09a79143da5aec";
 
 function loadWeather() {
 
-    if (!navigator.geolocation) {
-        document.getElementById("condition").textContent =
-            "NO GPS";
-        return;
-    }
+    document.getElementById("condition").textContent =
+        "REQUESTING GPS";
 
     navigator.geolocation.getCurrentPosition(
 
@@ -176,10 +173,16 @@ function loadWeather() {
                 `ERR ${error.code}`;
             document.getElementById("condition").textContent =
                 error.message;
+        },
+
+        {
+            timeout: 5000
         }
 
     );
 }
+
+loadWeather();
 loadWeather();
 setInterval(loadWeather, 600000);
 
