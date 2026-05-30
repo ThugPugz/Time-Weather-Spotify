@@ -158,8 +158,11 @@ const WEATHER_API_KEY =
 
 function loadWeather() {
 
+    const LAT = 43.0760;
+    const LON = -107.2903;
+
     fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=40.7128&lon=-74.0060&units=imperial&appid=${WEATHER_API_KEY}`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=imperial&appid=${WEATHER_API_KEY}`
     )
     .then(r => r.json())
     .then(data => {
