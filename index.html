@@ -155,50 +155,31 @@ function updateClock() {
 const WEATHER_API_KEY = "d9fb0d09df7205e25b09a79143da5aec";
 
 async function loadWeather() {
+
     if (!navigator.geolocation) {
         document.getElementById("condition").textContent =
-            "Location unavailable";
+            "No GPS";
         return;
     }
 
     navigator.geolocation.getCurrentPosition(
-    (position) => {
-        document.getElementById("condition").textContent =
-            `GPS OK`;
-    },
-    (error) => {
-        document.getElementById("condition").textContent =
-            `GPS Error ${error.code}`;
-    }
-);
 
-                const data = await response.json();
-
-console.log(data);
-
-if (!data.main) {
-    throw new Error(JSON.stringify(data));
-}
-
-                document.getElementById("temp").textContent =
-                    `${Math.round(data.main.temp)}°F`;
-
-                document.getElementById("condition").textContent =
-                    data.weather[0].main;
-            }
-            catch (e) {
-    console.error(e);
-
-    document.getElementById("condition").textContent =
-        e.message;
-}
-        },
-        () => {
+        (position) => {
             document.getElementById("condition").textContent =
-                "Location denied";
+                `GPS OK`;
+
+            document.getElementById("temp").textContent =
+                `${position.coords.latitude.toFixed(2)}`;
+        },
+
+        (error) => {
+            document.getElementById("condition").textContent =
+                `GPS Error ${error.code}`;
         }
+
     );
 }
+
 
 loadWeather();
 setInterval(loadWeather, 600000);
