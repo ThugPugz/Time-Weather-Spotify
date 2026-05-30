@@ -187,7 +187,7 @@ function loadWeather() {
 loadWeather();
 setInterval(loadWeather, 300000);
 // SPOTIFY
-const SPOTIFY_TOKEN = "YOUR_SPOTIFY_ACCESS_TOKEN";
+const SPOTIFY_TOKEN = "BQBkF45IhTwjcsEdlMvMyXL-Uq1jUKH2ucisdMvPrA47JW_rZBJx-2iJIDB_BPrhOOd-0VoWISw1dLwTsz46MCEKMsl-QtFcgSEnwlika3IBFPIGYytBNgAAOAA6Vgu3vXFNamLSzpI";
 
 let isPlaying = false;
 
@@ -197,7 +197,7 @@ async function toggleSpotify() {
         ? "pause"
         : "play";
 
-    await fetch(
+    const response = await fetch(
         `https://api.spotify.com/v1/me/player/${endpoint}`,
         {
             method: "PUT",
@@ -207,10 +207,17 @@ async function toggleSpotify() {
         }
     );
 
-    isPlaying = !isPlaying;
+    console.log("Status:", response.status);
 
-    document.getElementById("spotifyBtn").innerHTML =
-        isPlaying ? "❚❚" : "▶";
+    const text = await response.text();
+    console.log(text);
+
+    if(response.ok){
+        isPlaying = !isPlaying;
+
+        document.getElementById("spotifyBtn").innerHTML =
+            isPlaying ? "❚❚" : "▶";
+    }
 }
 
 document
