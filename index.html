@@ -182,6 +182,10 @@ async function loadWeather() {
 
 console.log(data);
 
+if (!data.main) {
+    throw new Error(JSON.stringify(data));
+}
+
                 document.getElementById("temp").textContent =
                     `${Math.round(data.main.temp)}°F`;
 
