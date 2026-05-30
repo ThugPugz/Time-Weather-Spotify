@@ -182,13 +182,14 @@ function loadWeather() {
     })
     .catch(err => {
 
-        document.getElementById("temp").textContent = "--";
-        document.getElementById("condition").textContent =
-            "Weather Error";
+    document.getElementById("temp").textContent = "ERR";
 
-        console.error(err);
+    document.getElementById("condition").textContent =
+        err.toString();
 
-    });
+    console.error(err);
+
+});
 
 }
 
