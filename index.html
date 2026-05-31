@@ -148,25 +148,20 @@ body {
   .album-section {
     display: flex;
     align-items: center;
-    gap: 14px;
-
-    margin-bottom: 20px;
-    position: relative;
+    justify-content: center;
+    gap: 18px;
 }
 
 #volumeSlider {
     width: 170px;
     height: 10px;
 
-    transform: translateY(-50%) rotate(-90deg);
+    transform: rotate(-90deg);
 
     accent-color: #f7a2da;
-    position: absolute;
-
-    right: -95px;   /* pull it slightly back */
-    top: 50%;
-
     -webkit-appearance: none;
+
+    margin-left: 10px; /* pushes it slightly right */
 }  
     /* SAKURA THUMB */
    #volumeSlider::-webkit-slider-thumb {
