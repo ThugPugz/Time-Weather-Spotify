@@ -65,12 +65,11 @@ body {
 
 
 .weather {
-    text-align: center;
+    margin-top: -10px;
 }
 
 .temp {
-    font-size: 30px;
-    font-weight: 600;
+    font-size: 26px;
 }
 
 .condition {
@@ -105,31 +104,53 @@ body {
 }
 
 #songTitle {
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    max-width: 250px;
+    font-size: 18px;
+    font-weight: 700;
+
+    margin-top: 8px;
 }
 
 #songArtist {
-    font-size: 13px;
-    opacity: 0.7;
-    text-align: center;
+    font-size: 14px;
+    opacity: .75;
+
+    margin-top: 4px;
 }
 
 #albumArt {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
 
-    object-fit: cover;
-
-    border-radius: 18px;
+    border-radius: 22px;
 
     box-shadow:
-        0 0 20px rgba(0,0,0,.4);
+        0 0 20px rgba(247,162,218,.25);
+} 
 
-    display: block;
-}    
+ .progress {
+    width: 140px;
+    height: 4px;
+
+    background: rgba(255,255,255,.15);
+
+    border-radius: 999px;
+
+    overflow: hidden;
+
+    margin-top: 10px;
+}
+
+#progressFill {
+    width: 0%;
+
+    height: 100%;
+
+    background: #f7a2da;
+
+    border-radius: 999px;
+
+    transition: width .5s linear;
+}   
     
 </style>
 </head>
@@ -159,6 +180,9 @@ body {
 
 <div id="songTitle">No song</div>
 <div id="songArtist"></div>
+<div class="progress">
+    <div id="progressFill"></div>
+</div>    
 
 </div>
 
@@ -502,14 +526,15 @@ document
 
     const data = JSON.parse(text);
 
-    isPlaying = data.is_playing;
+isPlaying = data.is_playing;
 
 document.getElementById("spotifyBtn")
     .textContent =
         isPlaying
             ? "❚❚"
             : "▶";
-        if (!data.item) {
+
+if (!data.item) {
 
     document.getElementById("songTitle")
         .textContent = "No song";
@@ -517,8 +542,20 @@ document.getElementById("spotifyBtn")
     document.getElementById("songArtist")
         .textContent = "";
 
+    document.getElementById("progressFill")
+        .style.width = "0%";
+
     return;
 }
+
+const progress = data.progress_ms || 0;
+const duration = data.item.duration_ms || 1;
+
+const percent =
+    (progress / duration) * 100;
+
+document.getElementById("progressFill")
+    .style.width = percent + "%";
         console.log(data);
 console.log(data.item.album.images[0].url);
 
