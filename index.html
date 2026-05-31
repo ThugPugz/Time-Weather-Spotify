@@ -815,10 +815,7 @@ function updateVolumeSliderFill() {
 
     const value = Number(volumeSlider.value);
 
-    volumeSlider.style.setProperty(
-        "--fill",
-        (100 - value) + "%"
-    );
+    volumeSlider.style.setProperty("--fill", value + "%");
 }
 
  function setSpotifyControlsEnabled(state) {
