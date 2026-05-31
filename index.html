@@ -148,9 +148,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    line-height: 0;   /* ADD THIS */
+    font-size: 0;     /* ADD THIS */
 }
     .icon-btn svg {
     display: block;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
 }
     #nextBtn svg {
     transform: scaleX(-1);
