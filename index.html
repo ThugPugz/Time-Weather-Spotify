@@ -510,10 +510,29 @@ async function toggleSpotify() {
         );
 
     if (!token) {
-
         await loginSpotify();
         return;
     }
+
+    // Wake desktop player before starting playback
+    if (!isPlaying) {
+
+    const activated =
+        await activateDesktopPlayer();
+
+    if (!activated) {
+        console.log(
+            "No desktop Spotify device found"
+        );
+
+        await updateCurrentSong();
+        return;
+    }
+
+    await new Promise(resolve =>
+        setTimeout(resolve, 1000)
+    );
+}
 
     const endpoint =
         isPlaying
@@ -531,37 +550,29 @@ async function toggleSpotify() {
                 }
             }
         );
-    console.log(
+
+   console.log(
     "Player response:",
     response.status
 );
 
+if (
+    response.status !== 204 &&
+    !response.ok
+) {
     console.log(
-        "Spotify status:",
+        "Play/Pause failed:",
         response.status
     );
-
-    if (
-        response.ok ||
-        response.status === 204
-    ) {
-
-        setTimeout(
-            updateCurrentSong,
-            1000
-        );
-
-    } else {
-
-        console.log(
-            "Play/Pause failed"
-        );
-
-    }
+    return;
 }
 
-
-
+setTimeout(
+    updateCurrentSong,
+    1000
+);
+}
+           
 document
     .getElementById("spotifyBtn")
     .addEventListener(
@@ -622,6 +633,70 @@ async function setVolume(e) {
     );
 }
 
+async function activateDesktopPlayer() {
+
+    const token =
+        localStorage.getItem(
+            "spotify_access_token"
+        );
+
+    if (!token) return false;
+
+    const devicesResponse = await fetch(
+        "https://api.spotify.com/v1/me/player/devices",
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    const devicesData =
+        await devicesResponse.json();
+
+    console.log("Devices:", devicesData);
+
+    if (!devicesData.devices.length)
+        return false;
+
+    const device =
+    devicesData.devices.find(
+        d => d.is_active
+    ) ||
+    devicesData.devices.find(
+        d => d.type === "Computer"
+    ) ||
+    devicesData.devices[0];
+
+if (!device)
+    return false;
+
+console.log("Selected device:", device);
+console.log("Device ID:", device.id);
+
+    console.log(
+    "Activating:",
+    device.name
+);
+
+    const transferResponse = await fetch(
+        "https://api.spotify.com/v1/me/player",
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                device_ids: [device.id],
+                play: false
+            })
+        }
+    );
+
+    return transferResponse.ok;
+}
+
 async function updateCurrentSong() {
     const token =
         localStorage.getItem(
@@ -659,20 +734,39 @@ async function updateCurrentSong() {
 
     if (response.status === 204) {
 
-        document.getElementById("songTitle")
-            .textContent =
-            "No active Spotify device";
+    console.log("No active device. Trying to activate desktop...");
 
-        document.getElementById("songArtist")
-            .textContent = "";
+    const activated =
+        await activateDesktopPlayer();
 
-        document.getElementById("spotifyBtn")
-            .textContent = "▶";
+    if (activated) {
 
-        isPlaying = false;
+        console.log(
+            "Desktop activated. Retrying..."
+        );
+
+        setTimeout(
+            updateCurrentSong,
+            1000
+        );
 
         return;
     }
+
+    document.getElementById("songTitle")
+        .textContent =
+        "No active Spotify device";
+
+    document.getElementById("songArtist")
+        .textContent = "";
+
+    document.getElementById("spotifyBtn")
+        .textContent = "▶";
+
+    isPlaying = false;
+
+    return;
+}
 
     if (response.status !== 200) {
         console.log(
