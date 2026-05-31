@@ -505,16 +505,10 @@ async function exchangeCodeForToken() {
 }
 
 (async () => {
-
     await exchangeCodeForToken();
 
-    updateCurrentSong();
-
-    setInterval(
-        updateCurrentSong,
-        5000
-    );
-
+    await updateCurrentSong();
+    setInterval(updateCurrentSong, 5000);
 })();
 
 async function toggleSpotify() {
@@ -550,9 +544,12 @@ async function toggleSpotify() {
 }
 
     const endpoint =
-        isPlaying
-            ? "pause"
-            : "play";
+    (await fetch("https://api.spotify.com/v1/me/player", {
+        headers: { Authorization: `Bearer ${token}` }
+    }).then(r => r.json())
+).is_playing
+    ? "pause"
+    : "play";
 
     const response =
         await fetch(
@@ -588,11 +585,6 @@ setTimeout(
 );
 }
            
-document.getElementById("spotifyBtn").addEventListener("click", toggleSpotify);
-document.getElementById("nextBtn").addEventListener("click", nextTrack);
-    
-    
-    
 async function nextTrack() {
     const token = localStorage.getItem("spotify_access_token");
     if (!token) return;
@@ -606,7 +598,80 @@ async function nextTrack() {
 
     setTimeout(updateCurrentSong, 500);
 }
- 
+
+    
+
+async function toggleRepeat() {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    // get current repeat state
+    const state = await fetch("https://api.spotify.com/v1/me/player", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const data = await state.json();
+
+    // cycle: off → context → track → off
+    let newState;
+
+    if (data.repeat_state === "off") newState = "context";
+    else if (data.repeat_state === "context") newState = "track";
+    else newState = "off";
+
+    await fetch(
+        `https://api.spotify.com/v1/me/player/repeat?state=${newState}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    console.log("Repeat set to:", newState);
+}
+    
+async function prevTrack() {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    await fetch("https://api.spotify.com/v1/me/player/previous", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    setTimeout(updateCurrentSong, 500);
+}
+
+async function toggleShuffle() {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    // get current state first
+    const state = await fetch("https://api.spotify.com/v1/me/player", {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await state.json();
+    const newShuffle = !data.shuffle_state;
+
+    await fetch(
+        `https://api.spotify.com/v1/me/player/shuffle?state=${newShuffle}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    console.log("Shuffle set to:", newShuffle);
+}
 
 const volumeSlider =
     document.getElementById("volumeSlider");
@@ -615,11 +680,16 @@ function updateVolumeSliderFill() {
 
     const value = Number(volumeSlider.value);
 
-    volumeSlider.style.setProperty(
-        "--fill",
-        `calc(${value}% + 8px)`
-    );
+    volumeSlider.style.setProperty("--fill", value + "%");
 }
+
+ function setSpotifyControlsEnabled(state) {
+    ["nextBtn","prevBtn","shuffleBtn","repeatBtn","spotifyBtn"]
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = !state;
+        });
+}   
 
 updateVolumeSliderFill();
 
@@ -632,20 +702,12 @@ volumeSlider.addEventListener("mouseup", () => {
 });
 
 volumeSlider.addEventListener("input", e => {
-
     updateVolumeSliderFill();
-
     setVolume(e);
-
 });
 
 async function setVolume(e) {
-
-    const token =
-        localStorage.getItem(
-            "spotify_access_token"
-        );
-
+    const token = localStorage.getItem("spotify_access_token");
     if (!token) return;
 
     const volume = e.target.value;
@@ -776,34 +838,25 @@ async function updateCurrentSong() {
 
     console.log("No active device. Trying to activate desktop...");
 
-    const activated =
-        await activateDesktopPlayer();
+    const activated = await activateDesktopPlayer();
 
     if (activated) {
-
-        console.log(
-            "Desktop activated. Retrying..."
-        );
-
-        setTimeout(
-            updateCurrentSong,
-            1000
-        );
-
+        console.log("Desktop activated. Retrying...");
+        setTimeout(updateCurrentSong, 1000);
         return;
     }
 
-    document.getElementById("songTitle")
-        .textContent =
+    document.getElementById("songTitle").textContent =
         "No active Spotify device";
 
-    document.getElementById("songArtist")
-        .textContent = "";
+    document.getElementById("songArtist").textContent = "";
 
-    document.getElementById("spotifyBtn")
-        .textContent = "▶";
+    document.getElementById("spotifyBtn").textContent = "▶";
 
     isPlaying = false;
+
+    // ✅ ONLY disable here (failure case)
+    setSpotifyControlsEnabled(false);
 
     return;
 }
@@ -874,9 +927,14 @@ document.getElementById("progressFill")
         console.log(data);
 console.log(data.item.album.images[0].url);
 
-    document.getElementById("albumArt").src =
-        data.item.album.images[0].url;
+    const img =
+    data.item?.album?.images?.[0]?.url;
 
+if (img) {
+    document.getElementById("albumArt").src = img;
+} else {
+    document.getElementById("albumArt").src = "";
+}
     document.getElementById("songTitle").textContent =
         data.item.name;
 
@@ -885,6 +943,11 @@ console.log(data.item.album.images[0].url);
             .map(a => a.name)
             .join(", ");
 }
+document.getElementById("spotifyBtn").addEventListener("click", toggleSpotify);
+document.getElementById("nextBtn").addEventListener("click", nextTrack);
+document.getElementById("prevBtn").addEventListener("click", prevTrack);
+document.getElementById("shuffleBtn").addEventListener("click", toggleShuffle);
+document.getElementById("repeatBtn").addEventListener("click", toggleRepeat);
 
 </script>
 
