@@ -99,28 +99,33 @@ body {
 .spotify {
     display: flex;
     justify-content: center;
-    margin-bottom: 18px;
+    align-items: center;
+    gap: 28px;
 }
 
+.left-controls,
+.right-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}  
+
 .spotify-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #f7a2da;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(247,162,218,.35);
+}
+
+.spotify-btn.main {
     width: 72px;
     height: 72px;
-
-    border: none;
-    border-radius: 50%;
-
-    background: rgba(247,162,218,.65);
-    color: white;
-
     font-size: 28px;
-    cursor: pointer;
-
-    transition: transform .2s;
-}
-
-.spotify-btn {
-    background: #f7a2da;
-    box-shadow: 0 0 18px rgba(247,162,218,.45);
 }
 
 #songTitle {
@@ -266,9 +271,19 @@ body {
 </div>
 
 <div class="spotify">
-    <button class="spotify-btn" id="spotifyBtn">
-        ▶
-    </button>
+
+    <div class="left-controls">
+        <button class="spotify-btn" id="shuffleBtn">⤮</button>
+        <button class="spotify-btn" id="prevBtn">⏮</button>
+    </div>
+
+    <button class="spotify-btn main" id="spotifyBtn">▶</button>
+
+    <div class="right-controls">
+        <button class="spotify-btn" id="nextBtn">⏭</button>
+        <button class="spotify-btn" id="repeatBtn">🔁</button>
+    </div>
+
 </div>
 
 <div id="songTitle">No song</div>
@@ -573,12 +588,25 @@ setTimeout(
 );
 }
            
-document
-    .getElementById("spotifyBtn")
-    .addEventListener(
-        "click",
-        toggleSpotify
-    );
+document.getElementById("spotifyBtn").addEventListener("click", toggleSpotify);
+document.getElementById("nextBtn").addEventListener("click", nextTrack);
+    
+    
+    
+async function nextTrack() {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    await fetch("https://api.spotify.com/v1/me/player/next", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    setTimeout(updateCurrentSong, 500);
+}
+ 
 
 const volumeSlider =
     document.getElementById("volumeSlider");
