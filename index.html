@@ -553,13 +553,13 @@ function updateVolumeSliderFill() {
     const value = volumeSlider.value;
 
     volumeSlider.style.background =
-        `linear-gradient(
-            to top,
-            rgba(255,255,255,0.12) 0%,
-            rgba(255,255,255,0.12) ${100 - value}%,
-            #f7a2da ${100 - value}%,
-            #f7a2da 100%
-        )`;
+    `linear-gradient(
+        to top,
+        rgba(255,255,255,0.22) 0%,
+        rgba(255,255,255,0.22) ${100 - value}%,
+        #f7a2da ${100 - value}%,
+        #f7a2da 100%
+    )`;
 }
 
 updateVolumeSliderFill();
