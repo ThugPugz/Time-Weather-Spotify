@@ -145,6 +145,28 @@ body {
     margin-bottom: 20px;
 } 
 
+  .album-section {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#volumeSlider {
+    width: 120px;
+    height: 6px;
+
+    transform: rotate(-90deg);
+
+    accent-color: #f7a2da;
+    position: absolute;
+    right: -70px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+}  
+
  .progress {
     width: 140px;
     height: 8px;
@@ -182,7 +204,18 @@ body {
     <div id="temp" class="temp">--°</div>
 </div>
 
+    <div class="album-section">
+
     <img id="albumArt" src="" alt="">
+
+    <input
+        type="range"
+        id="volumeSlider"
+        min="0"
+        max="100"
+        value="50">
+
+</div>
 
 <div class="spotify">
     <button class="spotify-btn" id="spotifyBtn">
@@ -285,7 +318,7 @@ const REDIRECT_URI =
     "https://thugpugz.github.io/Time-Weather-Spotify/";
 
 const SCOPES =
-    "user-read-playback-state user-modify-playback-state user-read-currently-playing";
+"user-read-playback-state user-modify-playback-state user-read-currently-playing user-read-playback-state";
 
 let isPlaying = false;
 
@@ -486,8 +519,37 @@ document
         "click",
         toggleSpotify
     );
-    async function updateCurrentSong() {
 
+document
+    .getElementById("volumeSlider")
+    .addEventListener(
+        "input",
+        setVolume
+    );
+
+async function setVolume(e) {
+
+    const token =
+        localStorage.getItem(
+            "spotify_access_token"
+        );
+
+    if (!token) return;
+
+    const volume = e.target.value;
+
+    await fetch(
+        `https://api.spotify.com/v1/me/player/volume?volume_percent=${volume}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+}
+
+async function updateCurrentSong() {
     const token =
         localStorage.getItem(
             "spotify_access_token"
@@ -557,6 +619,10 @@ document
     if (!text) return;
 
     const data = JSON.parse(text);
+    if (data.device) {
+    document.getElementById("volumeSlider").value =
+        data.device.volume_percent;
+}
 
 isPlaying = data.is_playing;
 
