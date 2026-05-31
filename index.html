@@ -178,11 +178,24 @@ body {
 
     -webkit-appearance: none;
     appearance: none;
+
     border-radius: 999px;
 
     --fill: 50%;
-}
 
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,.90) 0%,
+            rgba(255,255,255,.90) var(--fill),
+            rgba(255,255,255,.25) var(--fill),
+            rgba(255,255,255,.25) 100%
+        );
+}
+    #volumeSlider::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 6px;
+}
     /* SAKURA THUMB */
    #volumeSlider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -200,19 +213,6 @@ body {
     background-position: center;
     margin-top: -9px;
     
-}
-    #volumeSlider::-webkit-slider-runnable-track {
-    height: 6px;
-    border-radius: 999px;
-
-    background:
-        linear-gradient(
-            to right,
-            rgba(255,255,255,.75) 0%,
-            rgba(255,255,255,.75) var(--fill),
-            rgba(255,255,255,.25) var(--fill),
-            rgba(255,255,255,.25) 100%
-        );
 }
 
  .progress {
