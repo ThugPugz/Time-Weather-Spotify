@@ -131,19 +131,23 @@ body {
 
  .progress {
     width: 140px;
-    height: 10px;
+    height: 8px;
 
-    background: white;
+    background: rgba(255,255,255,.25); /* transparent track */
+
+    border-radius: 999px;
+    overflow: hidden;
 
     margin-top: 20px;
 }
 
 #progressFill {
-    width: 50%; /* testing */
-
+    width: 50%;
     height: 100%;
 
     background: #f7a2da;
+
+    border-radius: 999px;
 }   
     
 </style>
