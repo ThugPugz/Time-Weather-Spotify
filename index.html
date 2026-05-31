@@ -635,12 +635,16 @@ async function setVolume(e) {
 
 async function activateDesktopPlayer() {
 
+    console.log("activateDesktopPlayer called");
+
     const token =
         localStorage.getItem(
             "spotify_access_token"
         );
 
     if (!token) return false;
+
+    console.log("Requesting devices...");
 
     const devicesResponse = await fetch(
         "https://api.spotify.com/v1/me/player/devices",
@@ -651,10 +655,18 @@ async function activateDesktopPlayer() {
         }
     );
 
+    console.log(
+        "Devices response status:",
+        devicesResponse.status
+    );
+
     const devicesData =
         await devicesResponse.json();
 
-    console.log("Devices:", devicesData);
+    console.log(
+        "Devices data:",
+        devicesData
+    );
 
     if (!devicesData.devices.length)
         return false;
