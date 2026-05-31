@@ -169,15 +169,17 @@ body {
     position: absolute;
 
     left: calc(50% + 35px);
-
     top: calc(50% - 8px);
+
     transform: translateY(-50%) rotate(-90deg);
 
     width: 170px;
     height: 10px;
 
-    accent-color: #f7a2da;
     -webkit-appearance: none;
+    appearance: none;
+
+    --fill: 50%;
 }
 
     /* SAKURA THUMB */
@@ -201,7 +203,15 @@ body {
     #volumeSlider::-webkit-slider-runnable-track {
     height: 6px;
     border-radius: 999px;
-    overflow: visible;    
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,.45) 0%,
+            rgba(255,255,255,.45) var(--fill),
+            rgba(255,255,255,.08) var(--fill),
+            rgba(255,255,255,.08) 100%
+        );
 }
 
  .progress {
@@ -562,16 +572,10 @@ const volumeSlider =
     document.getElementById("volumeSlider");
 
 function updateVolumeSliderFill() {
-    const value = volumeSlider.value;
-
-    volumeSlider.style.background =
-`linear-gradient(
-    to top,
-    rgba(255,255,255,0.08) 0%,
-    rgba(255,255,255,0.08) ${100 - value}%,
-    rgba(255,255,255,0.45) ${100 - value}%,
-    rgba(255,255,255,0.45) 100%
-)`;
+    volumeSlider.style.setProperty(
+        "--fill",
+        volumeSlider.value + "%"
+    );
 }
 
 updateVolumeSliderFill();
