@@ -172,6 +172,15 @@ body {
     opacity: 1;
     transform: scale(1.1);
 } 
+    
+.icon-btn.active {
+    color: #f7a2da;
+    opacity: 1;
+}
+
+.icon-btn.active svg {
+    filter: drop-shadow(0 0 4px rgba(247,162,218,.6));
+}
 
 .spotify-btn.main {
     width: 55px;
@@ -339,7 +348,7 @@ body {
         <path d="M6 6h2v12H6V6zm3.5 6L18 6v12l-8.5-6z"/>
     </svg>
 </button>
-</button>
+        
     </div>
 
     <button class="spotify-btn main" id="spotifyBtn">▶</button>
@@ -682,25 +691,59 @@ async function nextTrack() {
 
     
 
+async function toggleShuffle() {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    const state = await fetch(
+        "https://api.spotify.com/v1/me/player",
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    const data = await state.json();
+    const newShuffle = !data.shuffle_state;
+
+    await fetch(
+        `https://api.spotify.com/v1/me/player/shuffle?state=${newShuffle}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    document
+        .getElementById("shuffleBtn")
+        .classList.toggle("active", newShuffle);
+}
+
 async function toggleRepeat() {
     const token = localStorage.getItem("spotify_access_token");
     if (!token) return;
 
-    // get current repeat state
-    const state = await fetch("https://api.spotify.com/v1/me/player", {
-        headers: {
-            Authorization: `Bearer ${token}`
+    const state = await fetch(
+        "https://api.spotify.com/v1/me/player",
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
-    });
+    );
 
     const data = await state.json();
 
-    // cycle: off → context → track → off
-    let newState;
+    let newState = "off";
 
-    if (data.repeat_state === "off") newState = "context";
-    else if (data.repeat_state === "context") newState = "track";
-    else newState = "off";
+    if (data.repeat_state === "off") {
+        newState = "context";
+    } else if (data.repeat_state === "context") {
+        newState = "track";
+    }
 
     await fetch(
         `https://api.spotify.com/v1/me/player/repeat?state=${newState}`,
@@ -712,8 +755,10 @@ async function toggleRepeat() {
         }
     );
 
-    console.log("Repeat set to:", newState);
-}
+    document
+        .getElementById("repeatBtn")
+        .classList.toggle("active", newState !== "off");
+}    
     
 async function prevTrack() {
     const token = localStorage.getItem("spotify_access_token");
@@ -729,30 +774,6 @@ async function prevTrack() {
     setTimeout(updateCurrentSong, 500);
 }
 
-async function toggleShuffle() {
-    const token = localStorage.getItem("spotify_access_token");
-    if (!token) return;
-
-    // get current state first
-    const state = await fetch("https://api.spotify.com/v1/me/player", {
-        headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const data = await state.json();
-    const newShuffle = !data.shuffle_state;
-
-    await fetch(
-        `https://api.spotify.com/v1/me/player/shuffle?state=${newShuffle}`,
-        {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-
-    console.log("Shuffle set to:", newShuffle);
-}
 
 const volumeSlider =
     document.getElementById("volumeSlider");
@@ -971,6 +992,20 @@ async function updateCurrentSong() {
 }
 
 isPlaying = data.is_playing;
+
+document
+    .getElementById("shuffleBtn")
+    .classList.toggle(
+        "active",
+        data.shuffle_state
+    );
+
+document
+    .getElementById("repeatBtn")
+    .classList.toggle(
+        "active",
+        data.repeat_state !== "off"
+    );
 
 document.getElementById("spotifyBtn")
     .textContent =
