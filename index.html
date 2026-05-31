@@ -146,10 +146,26 @@ body {
 } 
 
   .album-section {
+    position: relative;
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 20px;
+    align-items: center;
+
+    width: 100%;
+}
+
+#volumeSlider {
+    position: absolute;
+
+    left: calc(50% + 125px);
+
+    width: 170px;
+    height: 10px;
+
+    transform: rotate(-90deg);
+
+    accent-color: #f7a2da;
+    -webkit-appearance: none;
 }
 #volumeSlider {
     width: 170px;
