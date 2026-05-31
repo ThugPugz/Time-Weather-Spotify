@@ -321,6 +321,7 @@ const SCOPES =
 "user-read-playback-state user-modify-playback-state user-read-currently-playing user-read-playback-state";
 
 let isPlaying = false;
+let adjustingVolume = false;
 
 function generateRandomString(length) {
 
@@ -520,12 +521,21 @@ document
         toggleSpotify
     );
 
-document
-    .getElementById("volumeSlider")
-    .addEventListener(
-        "input",
-        setVolume
-    );
+const volumeSlider =
+    document.getElementById("volumeSlider");
+
+volumeSlider.addEventListener("mousedown", () => {
+    adjustingVolume = true;
+});
+
+volumeSlider.addEventListener("mouseup", () => {
+    adjustingVolume = false;
+});
+
+volumeSlider.addEventListener(
+    "input",
+    setVolume
+);
 
 async function setVolume(e) {
 
@@ -619,7 +629,10 @@ async function updateCurrentSong() {
     if (!text) return;
 
     const data = JSON.parse(text);
-    if (data.device) {
+    if (
+    data.device &&
+    !adjustingVolume
+) {
     document.getElementById("volumeSlider").value =
         data.device.volume_percent;
 }
