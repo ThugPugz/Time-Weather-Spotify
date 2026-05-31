@@ -137,6 +137,10 @@ body {
 }
 
 #progressFill {
+    width: 50%; /* testing */
+
+    height: 100%;
+
     background: lime;
 }   
     
@@ -541,6 +545,11 @@ const duration = data.item.duration_ms || 1;
 
 const percent =
     (progress / duration) * 100;
+console.log({
+    progress,
+    duration,
+    percent
+});
 
 document.getElementById("progressFill")
     .style.width = percent + "%";
