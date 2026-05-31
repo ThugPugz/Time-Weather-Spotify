@@ -598,7 +598,7 @@ async function exchangeCodeForToken() {
     await exchangeCodeForToken();
 
     await updateCurrentSong();
-    setInterval(updateCurrentSong, 5000);
+    setInterval(updateCurrentSong, 15000);
 })();
 
 async function toggleSpotify() {
@@ -652,6 +652,39 @@ async function toggleSpotify() {
                 }
             }
         );
+    if (response.status === 429) {
+    console.log("Spotify rate limited");
+
+    const retryAfter =
+        response.headers.get("Retry-After");
+
+    console.log(
+        "Retry after:",
+        retryAfter
+    );
+
+    return;
+}
+    console.log(
+    "GET /me/player:",
+    response.status
+);
+
+    if (response.status === 429) {
+
+    const retryAfter =
+        response.headers.get("Retry-After");
+
+    console.log(
+        "Spotify rate limit. Retry after:",
+        retryAfter
+    );
+
+    document.getElementById("songTitle").textContent =
+        "Spotify rate limited";
+
+    return;
+}
 
    console.log(
     "Player response:",
@@ -846,6 +879,14 @@ async function activateDesktopPlayer() {
             }
         }
     );
+   if (devicesResponse.status === 429) {
+
+    console.log(
+        "Devices endpoint rate limited"
+    );
+
+    return false;
+} 
 
     console.log(
         "Devices response status:",
@@ -925,18 +966,34 @@ async function updateCurrentSong() {
 
     if (response.status === 401) {
 
-        localStorage.removeItem(
-            "spotify_access_token"
-        );
+    localStorage.removeItem(
+        "spotify_access_token"
+    );
 
-        document.getElementById("songTitle")
-            .textContent =
-            "Spotify login expired";
+    document.getElementById("songTitle")
+        .textContent =
+        "Spotify login expired";
 
-        return;
-    }
+    return;
+}
 
-    if (response.status === 204) {
+if (response.status === 429) {
+
+    const retryAfter =
+        response.headers.get("Retry-After");
+
+    console.log(
+        "Spotify rate limited. Retry after:",
+        retryAfter
+    );
+
+    document.getElementById("songTitle").textContent =
+        "Spotify rate limited";
+
+    return;
+}
+
+if (response.status === 204) {
 
     console.log("No active device. Trying to activate desktop...");
 
@@ -981,7 +1038,8 @@ async function updateCurrentSong() {
     if (!text) return;
 
     const data = JSON.parse(text);
-    if (
+
+if (
     data.device &&
     !adjustingVolume
 ) {
@@ -990,6 +1048,9 @@ async function updateCurrentSong() {
 
     updateVolumeSliderFill();
 }
+
+// Spotify is responding correctly and a device exists
+setSpotifyControlsEnabled(true);
 
 isPlaying = data.is_playing;
 
