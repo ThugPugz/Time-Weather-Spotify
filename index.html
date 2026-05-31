@@ -122,11 +122,6 @@ body {
     box-shadow: 0 0 18px rgba(247,162,218,.35);
 }
 
-.spotify-btn.main {
-    width: 72px;
-    height: 72px;
-    font-size: 28px;
-}
 
 #songTitle {
     font-size: 18px;
@@ -313,9 +308,16 @@ body {
     <button class="spotify-btn main" id="spotifyBtn">▶</button>
 
     <div class="right-controls">
-        <button class="spotify-btn" id="nextBtn">⏭</button>
-        <button class="spotify-btn" id="repeatBtn">🔁</button>
-    </div>
+
+    <button class="icon-btn" id="nextBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M7 6v12l10-6z"/>
+        </svg>
+    </button>
+
+    <button class="icon-btn" id="repeatBtn">🔁</button>
+
+</div>
 
 </div>
 
