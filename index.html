@@ -186,7 +186,6 @@ body {
 }
     #volumeSlider::-webkit-slider-runnable-track {
     height: 6px;
-    background: rgba(255,255,255,0.15);
     border-radius: 999px;
 }
 
@@ -547,6 +546,22 @@ document
 const volumeSlider =
     document.getElementById("volumeSlider");
 
+function updateVolumeSliderFill() {
+
+    const value = volumeSlider.value;
+
+    volumeSlider.style.background =
+        `linear-gradient(
+            to top,
+            rgba(255,255,255,0.12) 0%,
+            rgba(255,255,255,0.12) ${100 - value}%,
+            #f7a2da ${100 - value}%,
+            #f7a2da 100%
+        )`;
+}
+
+updateVolumeSliderFill();
+
 volumeSlider.addEventListener("mousedown", () => {
     adjustingVolume = true;
 });
@@ -555,10 +570,13 @@ volumeSlider.addEventListener("mouseup", () => {
     adjustingVolume = false;
 });
 
-volumeSlider.addEventListener(
-    "input",
-    setVolume
-);
+volumeSlider.addEventListener("input", e => {
+
+    updateVolumeSliderFill();
+
+    setVolume(e);
+
+});
 
 async function setVolume(e) {
 
@@ -658,6 +676,8 @@ async function updateCurrentSong() {
 ) {
     document.getElementById("volumeSlider").value =
         data.device.volume_percent;
+
+    updateVolumeSliderFill();
 }
 
 isPlaying = data.is_playing;
