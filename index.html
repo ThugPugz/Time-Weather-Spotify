@@ -573,9 +573,12 @@ const volumeSlider =
     document.getElementById("volumeSlider");
 
 function updateVolumeSliderFill() {
+
+    const value = Number(volumeSlider.value);
+
     volumeSlider.style.setProperty(
         "--fill",
-        volumeSlider.value + "%"
+        `calc(${value}% + 8px)`
     );
 }
 
