@@ -201,16 +201,17 @@ body {
     
 }
     #volumeSlider::-webkit-slider-runnable-track {
-    height: 6px;
+    height: 4px;
     border-radius: 999px;
+    overflow: hidden;
 
     background:
         linear-gradient(
             to right,
-            rgba(255,255,255,.45) 0%,
-            rgba(255,255,255,.45) var(--fill),
-            rgba(255,255,255,.08) var(--fill),
-            rgba(255,255,255,.08) 100%
+            rgba(255,255,255,.25) 0%,
+            rgba(255,255,255,.25) var(--fill),
+            rgba(255,255,255,.04) var(--fill),
+            rgba(255,255,255,.04) 100%
         );
 }
 
