@@ -203,6 +203,24 @@ body {
     margin-bottom: 4px;
 }
 
+#sideCharacter {
+    position: absolute;
+
+    left: calc(50% + 35px);
+    top: 55%;
+
+    transform: translateY(-50%);
+
+    width: 115px;
+    height: auto;
+
+    opacity: .95;
+
+    pointer-events: none;
+
+    z-index: 0;
+}    
+    
 #albumArt {
     width: 190px;
     height: 190px;
@@ -219,6 +237,9 @@ body {
         0 0 20px rgba(247,162,218,.25);
 
     margin-bottom: 20px;
+
+    position: relative;
+    z-index: 1;
 } 
 
   .album-section {
@@ -327,6 +348,11 @@ body {
     <div class="album-section">
 
     <img id="albumArt" src="" alt="">
+
+    <img
+        id="sideCharacter"
+        src="https://raw.githubusercontent.com/ThugPugz/totoro.gif/main/totoro.gif.gif"
+        alt="">
 
     <input
         type="range"
