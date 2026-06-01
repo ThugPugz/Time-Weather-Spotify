@@ -1507,6 +1507,10 @@ document.getElementById("prevBtn").addEventListener("click", prevTrack);
 document.getElementById("shuffleBtn").addEventListener("click", toggleShuffle);
 document.getElementById("repeatBtn").addEventListener("click", toggleRepeat);
 
+console.log("debugConsole:", document.getElementById("debugConsole"));
+console.log("debugInput:", document.getElementById("debugInput"));
+console.log("devPanel:", document.getElementById("devPanel"));
+
 const debugBox = document.getElementById("debugConsole");
 
 function addDebug(msg, type = "info") {
