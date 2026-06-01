@@ -504,14 +504,16 @@ body {
 }
 
    #devPanel {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+
+    z-index: 999999;
 
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
 
-    transition: .2s ease;
+    border: 2px solid red;
 }
 
 #devPanel.hidden {
