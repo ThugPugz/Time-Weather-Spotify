@@ -1554,6 +1554,10 @@ function addDebug(msg, type = "info") {
 
 document.addEventListener("keydown", (e) => {
     console.log("KEY:", e.key, e.ctrlKey, e.shiftKey);
+
+    if (e.key === "Escape") {
+        toggleDevPanel();
+    }
 });
     
 </script>
