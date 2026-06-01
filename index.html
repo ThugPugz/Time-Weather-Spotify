@@ -1514,10 +1514,27 @@ window.onerror = function (msg, src, line, col, err) {
     addDebug(`${msg} @ ${line}:${col}`, "error");
 };
 
-document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "d") {
-        e.preventDefault();
-        toggleDevPanel();
+debugInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+
+        const cmd = debugInput.value.trim().toLowerCase();
+
+        if (cmd === "x") {
+            document.getElementById("devPanel")
+                .classList.add("hidden");
+
+            debugInput.value = "";
+            return;
+        }
+
+        try {
+            const result = eval(debugInput.value);
+            addDebug(String(result), "info");
+        } catch (err) {
+            addDebug(err.message, "error");
+        }
+
+        debugInput.value = "";
     }
 });
     
