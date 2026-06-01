@@ -1514,6 +1514,8 @@ window.onerror = function (msg, src, line, col, err) {
     addDebug(`${msg} @ ${line}:${col}`, "error");
 };
 
+const debugInput = document.getElementById("debugInput");
+
 debugInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         try {
@@ -1548,20 +1550,7 @@ function addDebug(msg, type = "info") {
     document.getElementById("devPanel").classList.toggle("hidden");
 }
 
- const debugInput = document.getElementById("debugInput");
-
-debugInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        try {
-            const result = eval(debugInput.value);
-            addDebug(String(result), "info");
-        } catch (err) {
-            addDebug(err.message, "error");
-        }
-
-        debugInput.value = "";
-    }
-});   
+    
 
 document.addEventListener("keydown", (e) => {
     console.log("KEY:", e.key, e.ctrlKey, e.shiftKey);
