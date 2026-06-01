@@ -1516,17 +1516,6 @@ window.onerror = function (msg, src, line, col, err) {
 
 debugInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-
-        const cmd = debugInput.value.trim().toLowerCase();
-
-        if (cmd === "x") {
-            document.getElementById("devPanel")
-                .classList.add("hidden");
-
-            debugInput.value = "";
-            return;
-        }
-
         try {
             const result = eval(debugInput.value);
             addDebug(String(result), "info");
