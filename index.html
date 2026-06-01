@@ -394,6 +394,8 @@ body {
 
 .playlist-toggle:hover {
     transform: scale(1.08);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.28);
 }
 
 .playlist-toggle {
@@ -404,10 +406,13 @@ body {
     width: 48px;
     height: 48px;
 
-    border: none;
     border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
 
-    background: #f7a2da;
+    background: rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 
     display: flex;
     justify-content: center;
@@ -416,12 +421,14 @@ body {
     cursor: pointer;
 
     box-shadow:
-        0 0 18px rgba(247,162,218,.35);
+        0 4px 20px rgba(0,0,0,0.25),
+        inset 0 1px 1px rgba(255,255,255,0.15);
 
-    transition: 0.2s ease;
+    transition: all 0.2s ease;
 
     z-index: 100;
 }
+
 
 .playlist-toggle svg {
     width: 40px;
@@ -612,7 +619,7 @@ body {
 <button id="playlistToggle" class="playlist-toggle">
 <svg viewBox="0 0 168 168" aria-hidden="true">
 
-    <g transform="translate(0 0)">
+   <g transform="translate(0 -8)">
 
         <path
             d="M119.1 78.6c-22.8-13.5-60.4-14.8-82.2-8.2"
