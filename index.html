@@ -496,6 +496,18 @@ body {
 
     z-index: 10000;
 }
+
+   #devPanel {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+#devPanel.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+} 
     
 </style>
 </head>
@@ -610,8 +622,10 @@ body {
     </svg>
 </button>
 
-<div id="debugConsole"></div>
+<div id="devPanel">
+    <div id="debugConsole"></div>
     <input id="debugInput" placeholder="Enter command..." />
+</div>
     
 <script>
 // CLOCK
@@ -1424,6 +1438,13 @@ console.error = function (...args) {
 window.onerror = function (msg, src, line, col, err) {
     addDebug(`${msg} @ ${line}:${col}`, "error");
 };
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "F12") {
+        e.preventDefault(); // may not always work in all browsers
+        toggleDevPanel();
+    }
+});
     
 document.getElementById("spotifyBtn").addEventListener("click", toggleSpotify);
 document.getElementById("nextBtn").addEventListener("click", nextTrack);
@@ -1441,6 +1462,9 @@ function addDebug(msg, type = "info") {
     debugBox.appendChild(div);
 
     debugBox.scrollTop = debugBox.scrollHeight;
+}
+    function toggleDevPanel() {
+    document.getElementById("devPanel").classList.toggle("hidden");
 }
 
  const debugInput = document.getElementById("debugInput");
