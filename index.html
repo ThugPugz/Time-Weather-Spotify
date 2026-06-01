@@ -46,10 +46,17 @@ body {
     display: flex;
     justify-content: center;
     align-items: baseline;
-    gap: 8px;
+    gap: 10px; /* space between time group and AM/PM only */
 
     position: relative;
-    top: -75px;   /* increase magnitude to move higher */
+    top: -75px;
+}
+
+/* group time + colon together tightly */
+.time-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0px;   /* remove spacing completely */
 }
 
 .time {
@@ -355,9 +362,12 @@ body {
 <div class="widget">
 
     <div class="clock">
-    <span id="hours" class="time">9</span>
-    <span class="colon">:</span>
-    <span id="minutes" class="time">41</span>
+    <div class="time-group">
+        <span id="hours" class="time">9</span>
+        <span class="colon">:</span>
+        <span id="minutes" class="time">41</span>
+    </div>
+
     <span id="ampm" class="ampm">AM</span>
 </div>
 
