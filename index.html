@@ -1548,7 +1548,13 @@ function addDebug(msg, type = "info") {
     debugBox.scrollTop = debugBox.scrollHeight;
 }
     function toggleDevPanel() {
-    document.getElementById("devPanel").classList.toggle("hidden");
+    const panel = document.getElementById("devPanel");
+
+    panel.classList.toggle("hidden");
+
+    const isHidden = panel.classList.contains("hidden");
+
+    localStorage.setItem("devPanelHidden", isHidden);
 }
 
     
@@ -1562,6 +1568,14 @@ document.addEventListener("keydown", (e) => {
         toggleDevPanel();
     }
 });
+
+    (function () {
+    const hidden = localStorage.getItem("devPanelHidden") === "true";
+
+    if (hidden) {
+        document.getElementById("devPanel").classList.add("hidden");
+    }
+})();
     
 </script>
 
