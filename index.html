@@ -741,6 +741,13 @@ const SCOPES =
 let isPlaying = false;
 let adjustingVolume = false;
 
+const PINNED_PLAYLISTS = [
+    "Liked Songs",
+    "Heart Eyes",
+    "Piano",
+    "Cheerup ButterCup"
+];
+
 function generateRandomString(length) {
 
     const chars =
@@ -1429,9 +1436,30 @@ async function loadPlaylists() {
     const data = await res.json();
 
     const list = document.getElementById("playlistList");
-    list.innerHTML = "";
+list.innerHTML = "";
 
-    data.items.forEach(pl => {
+data.items.sort((a, b) => {
+
+    const aIndex = PINNED_PLAYLISTS.indexOf(a.name);
+    const bIndex = PINNED_PLAYLISTS.indexOf(b.name);
+
+    const aPinned = aIndex !== -1;
+    const bPinned = bIndex !== -1;
+
+    // both pinned → use order from PINNED_PLAYLISTS
+    if (aPinned && bPinned) {
+        return aIndex - bIndex;
+    }
+
+    // pinned playlists always first
+    if (aPinned) return -1;
+    if (bPinned) return 1;
+
+    // everything else alphabetical
+    return a.name.localeCompare(b.name);
+});
+
+data.items.forEach(pl => {
         const div = document.createElement("div");
         div.className = "playlist-item";
         div.textContent = pl.name;
