@@ -486,14 +486,28 @@ body {
 
 #debugInput {
     width: 320px;
-    padding: 6px;
+    padding: 8px 10px;
 
-    background: rgba(0,0,0,.9);
-    border: 1px solid red;
-    border-radius: 8px;
+    background: rgba(25,25,25,.55);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border: 1px solid rgba(247,162,218,.25);
+    border-radius: 14px;
 
     color: white;
-    font-family: monospace;
+
+    font-family: Consolas, monospace;
+}
+
+#debugInput:focus {
+    outline: none;
+
+    border-color: #f7a2da;
+
+    box-shadow:
+        0 0 12px rgba(247,162,218,.35);
 }
 
    #devPanel {
