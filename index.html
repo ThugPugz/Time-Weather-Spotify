@@ -622,7 +622,7 @@ body {
     </svg>
 </button>
 
-<div id="devPanel">
+<div id="devPanel" class="hidden">
     <div id="debugConsole"></div>
     <input id="debugInput" placeholder="Enter command..." />
 </div>
@@ -1440,8 +1440,8 @@ window.onerror = function (msg, src, line, col, err) {
 };
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "d") {
-        e.preventDefault(); // may not always work in all browsers
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
         toggleDevPanel();
     }
 });
