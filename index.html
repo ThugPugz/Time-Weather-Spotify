@@ -445,26 +445,18 @@ body {
 }
 
 #debugConsole {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-
     width: 320px;
-    max-height: 180px;
+    height: 180px;
 
     overflow-y: auto;
 
-    background: rgba(0,0,0,0.75);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,.9);
+    border: 1px solid red;
     border-radius: 10px;
 
+    padding: 8px;
     font-size: 11px;
     font-family: monospace;
-
-    padding: 8px;
-
-    color: #cfcfcf;
-    z-index: 9999;
 }
 
 .debug-line {
@@ -485,36 +477,28 @@ body {
 }
 
 #debugInput {
-    position: absolute;
-    bottom: 200px;
-    left: 10px;
-
     width: 320px;
     padding: 6px;
 
-    background: rgba(0,0,0,0.75);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,.9);
+    border: 1px solid red;
     border-radius: 8px;
 
     color: white;
     font-family: monospace;
-    font-size: 12px;
-
-    z-index: 10000;
 }
 
    #devPanel {
     position: fixed;
     top: 20px;
     left: 20px;
-
     z-index: 999999;
 
-    opacity: 1;
-    transform: none;
-
-    border: 2px solid red;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
+
 
 #devPanel.hidden {
     opacity: 0;
