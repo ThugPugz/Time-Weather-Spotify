@@ -1481,6 +1481,10 @@ debugInput.addEventListener("keydown", (e) => {
         debugInput.value = "";
     }
 });   
+
+document.addEventListener("keydown", (e) => {
+    console.log("KEY:", e.key, e.ctrlKey, e.shiftKey);
+});
     
 </script>
 
