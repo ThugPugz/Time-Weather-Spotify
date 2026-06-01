@@ -206,19 +206,18 @@ body {
 #sideCharacter {
     position: absolute;
 
-    left: calc(50% + 35px);
-    top: 55%;
+    width: 220px;      /* bigger */
 
-    transform: translateY(-50%);
+    top: -15px;        /* move upward */
+    left: 50%;
 
-    width: 115px;
-    height: auto;
+    transform: translateX(-50%);
 
-    opacity: .95;
+    opacity: 1;
 
     pointer-events: none;
 
-    z-index: 0;
+    z-index: 5;        /* in front of album */
 }    
     
 #albumArt {
