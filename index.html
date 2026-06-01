@@ -352,7 +352,91 @@ body {
 
     border-radius: 999px;
     transition: width .35s linear;
-}   
+} 
+
+.playlist-drawer {
+    position: absolute;
+    left: -260px;
+    top: 0;
+
+    width: 260px;
+    height: 100vh;
+
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(14px);
+
+    border-right: 1px solid rgba(247,162,218,0.25);
+
+    padding: 16px;
+
+    transition: left 0.35s ease;
+
+    z-index: 50;
+    overflow-y: auto;
+}
+
+.playlist-drawer.open {
+    left: 0;
+}
+
+.drawer-header {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #f7a2da;
+}
+
+.playlist-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.06);
+    
+    transition: 0.2s ease;
+}
+
+.playlist-item:hover {
+    background: rgba(247,162,218,0.18);
+    transform: scale(1.03);
+    transform: translateX(6px);
+}
+
+.playlist-toggle {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+    border: none;
+
+    background: #f7a2da;
+    color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    box-shadow: 0 0 18px rgba(247,162,218,.35);
+
+    z-index: 100;
+}
+
+.playlist-toggle svg {
+    width: 22px;
+    height: 22px;
+}
+
+.playlist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
     
 </style>
 </head>
@@ -448,6 +532,18 @@ body {
 
 </div>
 
+<div id="playlistDrawer" class="playlist-drawer">
+    <div class="drawer-header">
+        🎧 Your Playlists
+    </div>
+    <div id="playlistList" class="playlist-list"></div>
+</div>
+
+<button id="playlistToggle" class="playlist-toggle">
+    <svg viewBox="0 0 24 24" fill="white">
+        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h12v2H3v-2z"/>
+    </svg>
+</button>
     
 <script>
 // CLOCK
@@ -1009,6 +1105,24 @@ console.log("Device ID:", device.id);
     return transferResponse.ok;
 }
 
+async function playPlaylist(uri) {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    await fetch("https://api.spotify.com/v1/me/player/play", {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            context_uri: uri
+        })
+    });
+
+    setTimeout(updateCurrentSong, 500);
+}
+    
 async function updateCurrentSong() {
     const token =
         localStorage.getItem(
@@ -1187,6 +1301,46 @@ if (img) {
             .map(a => a.name)
             .join(", ");
 }
+
+const drawer = document.getElementById("playlistDrawer");
+
+document.getElementById("playlistToggle").addEventListener("click", () => {
+    drawer.classList.toggle("open");
+
+    if (drawer.classList.contains("open")) {
+        loadPlaylists();
+    }
+});    
+
+async function loadPlaylists() {
+    const token = localStorage.getItem("spotify_access_token");
+    if (!token) return;
+
+    const res = await fetch("https://api.spotify.com/v1/me/playlists", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const data = await res.json();
+
+    const list = document.getElementById("playlistList");
+    list.innerHTML = "";
+
+    data.items.forEach(pl => {
+        const div = document.createElement("div");
+        div.className = "playlist-item";
+        div.textContent = pl.name;
+
+        div.onclick = () => {
+    playPlaylist(pl.uri);
+    drawer.classList.remove("open");
+};
+
+        list.appendChild(div);
+    });
+}
+    
 document.getElementById("spotifyBtn").addEventListener("click", toggleSpotify);
 document.getElementById("nextBtn").addEventListener("click", nextTrack);
 document.getElementById("prevBtn").addEventListener("click", prevTrack);
