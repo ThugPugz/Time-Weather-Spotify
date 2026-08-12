@@ -590,6 +590,12 @@ body {
     opacity: .5;
     margin-top: 3px;
 }
+
+#glucoseChange {
+    font-size: 18px;
+    font-weight: 700;
+    opacity: .8;
+}
     
 </style>
 </head>
@@ -604,11 +610,13 @@ body {
 
     <div class="glucose-row">
 
-        <span id="glucoseValue">---</span>
+    <span id="glucoseValue">---</span>
 
-        <span id="glucoseTrend">→</span>
+    <span id="glucoseTrend">→</span>
 
-    </div>
+    <span id="glucoseChange">—</span>
+
+</div>
 
     <div class="glucose-unit">
         mg/dL
@@ -1658,6 +1666,7 @@ document.addEventListener("keydown", (e) => {
 const SUGARMATE_WORKER =
     "https://sugarmate-glucose.sophiadobben.workers.dev/";
 
+let previousGlucose = null;    
 async function updateGlucose() {
 
     const glucose =
@@ -1691,16 +1700,47 @@ async function updateGlucose() {
         const data =
             await response.json();
 
+        
+
         console.log(
             "Sugarmate:",
             data
         );
 
-        glucose.textContent =
-            data.mg_dl ?? "---";
+        const currentGlucose = Number(data.mg_dl);
 
-        trend.textContent =
-            glucoseTrendArrow(data.trend);
+glucose.textContent = currentGlucose;
+
+// Sugarmate's actual trend
+trend.textContent =
+    glucoseTrendArrow(data.trend);
+
+// Change since previous reading
+if (previousGlucose !== null) {
+
+    const difference =
+        currentGlucose - previousGlucose;
+
+    if (difference > 0) {
+        document.getElementById("glucoseChange").textContent =
+            "+" + difference;
+    }
+    else if (difference < 0) {
+        document.getElementById("glucoseChange").textContent =
+            difference;
+    }
+    else {
+        document.getElementById("glucoseChange").textContent =
+            "±0";
+    }
+
+} else {
+
+    document.getElementById("glucoseChange").textContent =
+        "—";
+}
+
+previousGlucose = currentGlucose;
 
         if (data.started_at) {
 
