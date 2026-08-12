@@ -539,6 +539,57 @@ body {
     transform: translateY(10px);
     pointer-events: none;
 } 
+
+/* SUGARMATE GLUCOSE */
+
+.glucose-widget {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    color: white;
+}
+
+.glucose-title {
+    font-size: 14px;
+    font-weight: 700;
+    opacity: .8;
+    margin-bottom: 2px;
+}
+
+.glucose-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#glucoseValue {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+#glucoseTrend {
+    font-size: 28px;
+    font-weight: 800;
+    color: #f7a2da;
+}
+
+.glucose-unit {
+    font-size: 11px;
+    opacity: .65;
+    margin-top: 3px;
+}
+
+#glucoseStatus {
+    font-size: 9px;
+    opacity: .5;
+    margin-top: 3px;
+}
     
 </style>
 </head>
@@ -546,6 +597,28 @@ body {
 <body>
 
 <div class="widget">
+
+    <div class="glucose-widget">
+
+    <div class="glucose-title">💗 Glucose</div>
+
+    <div class="glucose-row">
+
+        <span id="glucoseValue">---</span>
+
+        <span id="glucoseTrend">→</span>
+
+    </div>
+
+    <div class="glucose-unit">
+        mg/dL
+    </div>
+
+    <div id="glucoseStatus">
+        Connecting…
+    </div>
+
+</div>
 
     <div class="clock">
     <div class="time-group">
@@ -1576,6 +1649,133 @@ document.addEventListener("keydown", (e) => {
         document.getElementById("devPanel").classList.add("hidden");
     }
 })();
+
+
+// ================================
+// SUGARMATE GLUCOSE
+// ================================
+
+const SUGARMATE_WORKER =
+    "https://sugarmate-glucose.sophiadobben.workers.dev/";
+
+async function updateGlucose() {
+
+    const glucose =
+        document.getElementById("glucoseValue");
+
+    const trend =
+        document.getElementById("glucoseTrend");
+
+    const status =
+        document.getElementById("glucoseStatus");
+
+    try {
+
+        const response = await fetch(
+            SUGARMATE_WORKER,
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " + response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Sugarmate:",
+            data
+        );
+
+        glucose.textContent =
+            data.mg_dl ?? "---";
+
+        trend.textContent =
+            glucoseTrendArrow(data.trend);
+
+        if (data.started_at) {
+
+            const time =
+                new Date(data.started_at);
+
+            status.textContent =
+                "Updated " +
+                time.toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit"
+                });
+
+        } else {
+
+            status.textContent =
+                "Sugarmate";
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Sugarmate error:",
+            error
+        );
+
+        glucose.textContent = "---";
+        trend.textContent = "→";
+
+        status.textContent =
+            "Waiting…";
+    }
+}
+
+
+function glucoseTrendArrow(direction) {
+
+    switch (direction) {
+
+        case "DOUBLE_UP":
+            return "↑↑";
+
+        case "SINGLE_UP":
+            return "↑";
+
+        case "FORTY_FIVE_UP":
+            return "↗";
+
+        case "FLAT":
+            return "→";
+
+        case "FORTY_FIVE_DOWN":
+            return "↘";
+
+        case "SINGLE_DOWN":
+            return "↓";
+
+        case "DOUBLE_DOWN":
+            return "↓↓";
+
+        default:
+            return "→";
+    }
+}
+
+
+// First reading
+updateGlucose();
+
+// Update every minute
+setInterval(
+    updateGlucose,
+    60000
+);    
     
 </script>
 
