@@ -1886,18 +1886,14 @@ async function updateGlucose() {
     }
     catch (error) {
 
-        console.error(
-            "Sugarmate error:",
-            error
-        );
+    console.error(
+        "Sugarmate error:",
+        error
+    );
 
-        // IMPORTANT:
-        // Don't erase the last good glucose reading
-        // just because Sugarmate temporarily returns 502.
-
-        status.textContent =
-            "Waiting…";
-    }
+    // Keep the last successful status visible.
+    // Don't flash "Waiting..." during temporary failures.
+}
 }
 
 
