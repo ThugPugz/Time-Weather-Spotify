@@ -856,6 +856,8 @@ loadWeather();
 setInterval(loadWeather, 300000);
 // SPOTIFY PKCE
 
+const DEFAULT_ALBUM_ART =
+    "https://raw.githubusercontent.com/ThugPugz/totoro.gif/main/Frieren%20GIF.gif";    
 const CLIENT_ID =
     "9ee2a1081a034f7bb99790c9f15ce422";
 
@@ -1501,6 +1503,9 @@ if (!data.item) {
 
     document.getElementById("songArtist")
         .textContent = "";
+    
+    document.getElementById("albumArt").src =
+    DEFAULT_ALBUM_ART;
 
     document.getElementById("progressFill")
         .style.width = "0%";
@@ -1530,7 +1535,8 @@ console.log(data.item.album.images[0].url);
 if (img) {
     document.getElementById("albumArt").src = img;
 } else {
-    document.getElementById("albumArt").src = "";
+    document.getElementById("albumArt").src =
+        DEFAULT_ALBUM_ART;
 }
     document.getElementById("songTitle").textContent =
         data.item.name;
