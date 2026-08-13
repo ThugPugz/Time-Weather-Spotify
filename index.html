@@ -1684,8 +1684,25 @@ document.addEventListener("keydown", (e) => {
 const SUGARMATE_WORKER =
     "https://sugarmate-glucose.sophiadobben.workers.dev/";
 
-let previousGlucose = null;
-let previousReadingTime = null;
+// Remember these across page refreshes
+let previousGlucose =
+    Number(localStorage.getItem("previousGlucose"));
+
+if (!Number.isFinite(previousGlucose)) {
+    previousGlucose = null;
+}
+
+let savedGlucoseChange =
+    localStorage.getItem("glucoseChange");
+
+if (savedGlucoseChange === null) {
+    savedGlucoseChange = "—";
+}
+
+// Restore the last +/- value immediately
+document.getElementById("glucoseChange").textContent =
+    savedGlucoseChange;
+
 
 async function updateGlucose() {
 
@@ -1694,6 +1711,9 @@ async function updateGlucose() {
 
     const trend =
         document.getElementById("glucoseTrend");
+
+    const change =
+        document.getElementById("glucoseChange");
 
     const status =
         document.getElementById("glucoseStatus");
@@ -1720,60 +1740,81 @@ async function updateGlucose() {
         const data =
             await response.json();
 
-        
-
         console.log(
             "Sugarmate:",
             data
         );
 
-        const currentGlucose = Number(data.mg_dl);
-const currentReadingTime = data.started_at || null;
+        const currentGlucose =
+            Number(data.mg_dl);
 
-glucose.textContent = currentGlucose;
-
-// Sugarmate's actual trend
-trend.textContent =
-    glucoseTrendArrow(data.trend);
+        glucose.textContent =
+            currentGlucose;
 
 
-// ========================================
-// ONLY calculate +/- for a NEW CGM reading
-// ========================================
-
-const isNewReading =
-    currentReadingTime &&
-    currentReadingTime !== previousReadingTime;
-
-if (isNewReading && previousGlucose !== null) {
-
-    const difference =
-        currentGlucose - previousGlucose;
-
-    if (difference > 0) {
-
-        document.getElementById("glucoseChange").textContent =
-            "+" + difference;
-
-    } else if (difference < 0) {
-
-        document.getElementById("glucoseChange").textContent =
-            difference;
-
-    } else {
-
-        document.getElementById("glucoseChange").textContent =
-            "±0";
-    }
-}
+        // Sugarmate's actual trend
+        trend.textContent =
+            glucoseTrendArrow(data.trend);
 
 
-// Remember this reading for the next poll
-if (currentReadingTime) {
-    previousReadingTime = currentReadingTime;
-}
+        // =====================================
+        // CALCULATE CHANGE FROM LAST READING
+        // =====================================
 
-previousGlucose = currentGlucose;
+        if (
+            previousGlucose !== null &&
+            currentGlucose !== previousGlucose
+        ) {
+
+            const difference =
+                currentGlucose - previousGlucose;
+
+            let changeText;
+
+            if (difference > 0) {
+
+                changeText =
+                    "+" + difference;
+
+            } else if (difference < 0) {
+
+                changeText =
+                    String(difference);
+
+            } else {
+
+                changeText =
+                    "±0";
+            }
+
+            // Update screen
+            change.textContent =
+                changeText;
+
+            // Remember it
+            localStorage.setItem(
+                "glucoseChange",
+                changeText
+            );
+        }
+
+
+        // =====================================
+        // SAVE CURRENT READING
+        // =====================================
+
+        previousGlucose =
+            currentGlucose;
+
+        localStorage.setItem(
+            "previousGlucose",
+            currentGlucose
+        );
+
+
+        // =====================================
+        // STATUS
+        // =====================================
 
         if (data.started_at) {
 
@@ -1791,8 +1832,8 @@ previousGlucose = currentGlucose;
 
             status.textContent =
                 "Sugarmate";
-
         }
+
 
     } catch (error) {
 
@@ -1801,8 +1842,11 @@ previousGlucose = currentGlucose;
             error
         );
 
-        glucose.textContent = "---";
-        trend.textContent = "→";
+        glucose.textContent =
+            "---";
+
+        trend.textContent =
+            "→";
 
         status.textContent =
             "Waiting…";
@@ -1843,6 +1887,7 @@ function glucoseTrendArrow(direction) {
 
 // First reading
 updateGlucose();
+
 
 // Update every minute
 setInterval(
