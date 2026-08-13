@@ -1685,8 +1685,13 @@ const SUGARMATE_WORKER =
     "https://sugarmate-glucose.sophiadobben.workers.dev/";
 
 // Remember these across page refreshes
+const savedPreviousGlucose =
+    localStorage.getItem("previousGlucose");
+
 let previousGlucose =
-    Number(localStorage.getItem("previousGlucose"));
+    savedPreviousGlucose !== null
+        ? Number(savedPreviousGlucose)
+        : null;
 
 if (!Number.isFinite(previousGlucose)) {
     previousGlucose = null;
@@ -1761,42 +1766,28 @@ async function updateGlucose() {
         // CALCULATE CHANGE FROM LAST READING
         // =====================================
 
-        if (
-            previousGlucose !== null &&
-            currentGlucose !== previousGlucose
-        ) {
+        if (previousGlucose !== null) {
 
-            const difference =
-                currentGlucose - previousGlucose;
+    const difference =
+        currentGlucose - previousGlucose;
 
-            let changeText;
+    let changeText;
 
-            if (difference > 0) {
+    if (difference > 0) {
+        changeText = "+" + difference;
+    } else if (difference < 0) {
+        changeText = String(difference);
+    } else {
+        changeText = "±0";
+    }
 
-                changeText =
-                    "+" + difference;
+    change.textContent = changeText;
 
-            } else if (difference < 0) {
-
-                changeText =
-                    String(difference);
-
-            } else {
-
-                changeText =
-                    "±0";
-            }
-
-            // Update screen
-            change.textContent =
-                changeText;
-
-            // Remember it
-            localStorage.setItem(
-                "glucoseChange",
-                changeText
-            );
-        }
+    localStorage.setItem(
+        "glucoseChange",
+        changeText
+    );
+}
 
 
         // =====================================
