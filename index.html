@@ -1760,13 +1760,12 @@ async function updateGlucose() {
 
 
         // =====================================
-        // CALCULATE CHANGE FROM LAST READING
-        // =====================================
+// CHANGE FROM ACTUAL PREVIOUS CGM READING
+// =====================================
 
-        if (previousGlucose !== null) {
+const difference = Number(data.change);
 
-    const difference =
-        currentGlucose - previousGlucose;
+if (Number.isFinite(difference)) {
 
     let changeText;
 
