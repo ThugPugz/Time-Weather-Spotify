@@ -1711,137 +1711,9 @@ document.getElementById("glucoseChange").textContent =
     savedGlucoseChange;
 
 
-async function updateGlucose() {
-
-    const glucose =
-        document.getElementById("glucoseValue");
-
-    const trend =
-        document.getElementById("glucoseTrend");
-
-    const change =
-        document.getElementById("glucoseChange");
-
-    const status =
-        document.getElementById("glucoseStatus");
-
-    try {
-
-       const response = await fetch(
-    SUGARMATE_WORKER + "?t=" + Date.now(),
-    {
-        method: "GET",
-        cache: "no-store"
-    }
-);
-
-        if (!response.ok) {
-            throw new Error(
-                "HTTP " + response.status
-            );
-        }
-
-        const data =
-            await response.json();
-
-        console.log(
-            "Sugarmate:",
-            data
-        );
-
-        const currentGlucose =
-    Number(data.glucose);
-
-        glucose.textContent =
-            currentGlucose;
-
-
-        // Sugarmate's actual trend
-        trend.textContent =
-            glucoseTrendArrow(data.trend);
-
-
-        // =====================================
-// CHANGE FROM ACTUAL PREVIOUS CGM READING
 // =====================================
-
-const difference = Number(data.change);
-
-if (Number.isFinite(difference)) {
-
-    let changeText;
-
-    if (difference > 0) {
-        changeText = "+" + difference;
-    } else if (difference < 0) {
-        changeText = String(difference);
-    } else {
-    changeText = "+0";
-}
-
-    change.textContent = changeText;
-
-    localStorage.setItem(
-        "glucoseChange",
-        changeText
-    );
-}
-
-
-        // =====================================
-        // SAVE CURRENT READING
-        // =====================================
-
-        previousGlucose =
-            currentGlucose;
-
-        localStorage.setItem(
-            "previousGlucose",
-            currentGlucose
-        );
-
-
-        // =====================================
-        // STATUS
-        // =====================================
-
-       if (data.timestamp) {
-
-    const time =
-        new Date(data.timestamp);
-
-            status.textContent =
-                "Updated " +
-                time.toLocaleTimeString([], {
-                    hour: "numeric",
-                    minute: "2-digit"
-                });
-
-        } else {
-
-            status.textContent =
-                "Sugarmate";
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Sugarmate error:",
-            error
-        );
-
-        glucose.textContent =
-            "---";
-
-        trend.textContent =
-            "→";
-
-        status.textContent =
-            "Waiting…";
-    }
-}
-
+// CONVERT SUGARMATE TREND TO ARROW
+// =====================================
 
 function glucoseTrendArrow(direction) {
 
@@ -1874,11 +1746,172 @@ function glucoseTrendArrow(direction) {
 }
 
 
-// First reading
+// =====================================
+// GET GLUCOSE FROM WORKER
+// =====================================
+
+async function updateGlucose() {
+
+    const glucose =
+        document.getElementById("glucoseValue");
+
+    const trend =
+        document.getElementById("glucoseTrend");
+
+    const change =
+        document.getElementById("glucoseChange");
+
+    const status =
+        document.getElementById("glucoseStatus");
+
+    try {
+
+        const response = await fetch(
+            SUGARMATE_WORKER + "?t=" + Date.now(),
+            {
+                method: "GET",
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " + response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Sugarmate:",
+            data
+        );
+
+
+        // =====================================
+        // CURRENT GLUCOSE
+        // =====================================
+
+        const currentGlucose =
+            Number(data.glucose);
+
+        if (!Number.isFinite(currentGlucose)) {
+            throw new Error(
+                "Invalid glucose value"
+            );
+        }
+
+        glucose.textContent =
+            currentGlucose;
+
+
+        // =====================================
+        // TREND
+        // =====================================
+
+        trend.textContent =
+            glucoseTrendArrow(data.trend);
+
+
+        // =====================================
+        // CHANGE FROM ACTUAL CGM READING
+        // =====================================
+
+        const difference =
+            Number(data.change);
+
+        if (Number.isFinite(difference)) {
+
+            let changeText;
+
+            if (difference > 0) {
+                changeText =
+                    "+" + difference;
+            }
+            else if (difference < 0) {
+                changeText =
+                    String(difference);
+            }
+            else {
+                changeText =
+                    "+0";
+            }
+
+            change.textContent =
+                changeText;
+
+            localStorage.setItem(
+                "glucoseChange",
+                changeText
+            );
+        }
+
+
+        // =====================================
+        // SAVE CURRENT READING
+        // =====================================
+
+        previousGlucose =
+            currentGlucose;
+
+        localStorage.setItem(
+            "previousGlucose",
+            currentGlucose
+        );
+
+
+        // =====================================
+        // STATUS
+        // =====================================
+
+        if (data.timestamp) {
+
+            const time =
+                new Date(data.timestamp);
+
+            status.textContent =
+                "Updated " +
+                time.toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit"
+                });
+
+        } else {
+
+            status.textContent =
+                "Sugarmate";
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "Sugarmate error:",
+            error
+        );
+
+        // IMPORTANT:
+        // Don't erase the last good glucose reading
+        // just because Sugarmate temporarily returns 502.
+
+        status.textContent =
+            "Waiting…";
+    }
+}
+
+
+// =====================================
+// FIRST READING
+// =====================================
+
 updateGlucose();
 
 
-// Update every 10 seconds
+// =====================================
+// UPDATE EVERY 10 SECONDS
+// =====================================
+
 setInterval(
     updateGlucose,
     10000
