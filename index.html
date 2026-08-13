@@ -1725,16 +1725,17 @@ async function updateGlucose() {
 
     try {
 
-        const response = await fetch(
-            SUGARMATE_WORKER,
-            {
-                method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                },
-                cache: "no-store"
-            }
-        );
+       const response = await fetch(
+    SUGARMATE_WORKER + "?t=" + Date.now(),
+    {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+            "Cache-Control": "no-cache"
+        },
+        cache: "no-store"
+    }
+);
 
         if (!response.ok) {
             throw new Error(
@@ -1880,10 +1881,10 @@ function glucoseTrendArrow(direction) {
 updateGlucose();
 
 
-// Update every minute
+// Update every 10 seconds
 setInterval(
     updateGlucose,
-    60000
+    10000
 );    
     
 </script>
