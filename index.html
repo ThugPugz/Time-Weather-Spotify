@@ -1751,7 +1751,7 @@ async function updateGlucose() {
         );
 
         const currentGlucose =
-            Number(data.mg_dl);
+    Number(data.glucose);
 
         glucose.textContent =
             currentGlucose;
@@ -1807,10 +1807,10 @@ async function updateGlucose() {
         // STATUS
         // =====================================
 
-        if (data.started_at) {
+       if (data.timestamp) {
 
-            const time =
-                new Date(data.started_at);
+    const time =
+        new Date(data.timestamp);
 
             status.textContent =
                 "Updated " +
