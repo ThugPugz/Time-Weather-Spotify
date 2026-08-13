@@ -1684,7 +1684,8 @@ document.addEventListener("keydown", (e) => {
 const SUGARMATE_WORKER =
     "https://sugarmate-glucose.sophiadobben.workers.dev/";
 
-let previousGlucose = null;    
+let previousGlucose = null;
+let lastReadingTime = null;    
 async function updateGlucose() {
 
     const glucose =
@@ -1733,8 +1734,11 @@ glucose.textContent = currentGlucose;
 trend.textContent =
     glucoseTrendArrow(data.trend);
 
-// Change since previous reading
-if (previousGlucose !== null) {
+// Only update +/- when the glucose reading actually changes
+if (
+    previousGlucose !== null &&
+    currentGlucose !== previousGlucose
+) {
 
     const difference =
         currentGlucose - previousGlucose;
@@ -1751,11 +1755,6 @@ if (previousGlucose !== null) {
         document.getElementById("glucoseChange").textContent =
             "±0";
     }
-
-} else {
-
-    document.getElementById("glucoseChange").textContent =
-        "—";
 }
 
 previousGlucose = currentGlucose;
