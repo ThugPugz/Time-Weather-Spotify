@@ -1533,8 +1533,7 @@ console.log(data.item.album.images[0].url);
 if (img) {
     document.getElementById("albumArt").src = img;
 } else {
-    document.getElementById("albumArt").src =
-        DEFAULT_ALBUM_ART;
+    document.getElementById("albumArt").src = "";
 }
     document.getElementById("songTitle").textContent =
         data.item.name;
