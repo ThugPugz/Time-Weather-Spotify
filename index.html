@@ -1685,7 +1685,8 @@ const SUGARMATE_WORKER =
     "https://sugarmate-glucose.sophiadobben.workers.dev/";
 
 let previousGlucose = null;
-let lastReadingTime = null;    
+let previousReadingTime = null;
+
 async function updateGlucose() {
 
     const glucose =
@@ -1727,6 +1728,7 @@ async function updateGlucose() {
         );
 
         const currentGlucose = Number(data.mg_dl);
+const currentReadingTime = data.started_at || null;
 
 glucose.textContent = currentGlucose;
 
@@ -1734,27 +1736,41 @@ glucose.textContent = currentGlucose;
 trend.textContent =
     glucoseTrendArrow(data.trend);
 
-// Only update +/- when the glucose reading actually changes
-if (
-    previousGlucose !== null &&
-    currentGlucose !== previousGlucose
-) {
+
+// ========================================
+// ONLY calculate +/- for a NEW CGM reading
+// ========================================
+
+const isNewReading =
+    currentReadingTime &&
+    currentReadingTime !== previousReadingTime;
+
+if (isNewReading && previousGlucose !== null) {
 
     const difference =
         currentGlucose - previousGlucose;
 
     if (difference > 0) {
+
         document.getElementById("glucoseChange").textContent =
             "+" + difference;
-    }
-    else if (difference < 0) {
+
+    } else if (difference < 0) {
+
         document.getElementById("glucoseChange").textContent =
             difference;
-    }
-    else {
+
+    } else {
+
         document.getElementById("glucoseChange").textContent =
             "±0";
     }
+}
+
+
+// Remember this reading for the next poll
+if (currentReadingTime) {
+    previousReadingTime = currentReadingTime;
 }
 
 previousGlucose = currentGlucose;
