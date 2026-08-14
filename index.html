@@ -1680,24 +1680,16 @@ document.addEventListener("keydown", (e) => {
 
 
 // ================================
-// SUGARMATE GLUCOSE
+// DEXCOM SHARE GLUCOSE
 // ================================
 
-const SUGARMATE_WORKER =
-    "https://sugarmate-glucose.sophiadobben.workers.dev/glucose";
+const DEXCOM_WORKER =
+    "https://lingering-firefly-7affdexcomsessionid.sophialovesfrogs1.workers.dev/glucose";
 
-// Remember these across page refreshes
-const savedPreviousGlucose =
-    localStorage.getItem("previousGlucose");
 
-let previousGlucose =
-    savedPreviousGlucose !== null
-        ? Number(savedPreviousGlucose)
-        : null;
-
-if (!Number.isFinite(previousGlucose)) {
-    previousGlucose = null;
-}
+// =====================================
+// REMEMBER LAST GLUCOSE CHANGE
+// =====================================
 
 let savedGlucoseChange =
     localStorage.getItem("glucoseChange");
@@ -1706,39 +1698,53 @@ if (savedGlucoseChange === null) {
     savedGlucoseChange = "—";
 }
 
-// Restore the last +/- value immediately
 document.getElementById("glucoseChange").textContent =
     savedGlucoseChange;
 
 
 // =====================================
-// CONVERT SUGARMATE TREND TO ARROW
+// CONVERT DEXCOM TREND TO ARROW
 // =====================================
 
 function glucoseTrendArrow(direction) {
 
     switch (direction) {
 
+        case "DoubleUp":
         case "DOUBLE_UP":
             return "↑↑";
 
+        case "SingleUp":
         case "SINGLE_UP":
             return "↑";
 
+        case "FortyFiveUp":
         case "FORTY_FIVE_UP":
             return "↗";
 
+        case "Flat":
         case "FLAT":
             return "→";
 
+        case "FortyFiveDown":
         case "FORTY_FIVE_DOWN":
             return "↘";
 
+        case "SingleDown":
         case "SINGLE_DOWN":
             return "↓";
 
+        case "DoubleDown":
         case "DOUBLE_DOWN":
             return "↓↓";
+
+        case "NotComputable":
+        case "NOT_COMPUTABLE":
+            return "?";
+
+        case "RateOutOfRange":
+        case "RATE_OUT_OF_RANGE":
+            return "-";
 
         default:
             return "→";
@@ -1747,7 +1753,7 @@ function glucoseTrendArrow(direction) {
 
 
 // =====================================
-// GET GLUCOSE FROM WORKER
+// GET GLUCOSE FROM DEXCOM WORKER
 // =====================================
 
 async function updateGlucose() {
@@ -1766,25 +1772,32 @@ async function updateGlucose() {
 
     try {
 
-        const response = await fetch(
-            SUGARMATE_WORKER + "?t=" + Date.now(),
-            {
-                method: "GET",
-                cache: "no-store"
-            }
-        );
+        const response =
+            await fetch(
+                DEXCOM_WORKER +
+                "?t=" +
+                Date.now(),
+                {
+                    method: "GET",
+                    cache: "no-store"
+                }
+            );
 
         if (!response.ok) {
+
             throw new Error(
-                "HTTP " + response.status
+                "HTTP " +
+                response.status
             );
         }
+
 
         const data =
             await response.json();
 
+
         console.log(
-            "Sugarmate:",
+            "Dexcom:",
             data
         );
 
@@ -1796,11 +1809,17 @@ async function updateGlucose() {
         const currentGlucose =
             Number(data.glucose);
 
-        if (!Number.isFinite(currentGlucose)) {
+        if (
+            !Number.isFinite(
+                currentGlucose
+            )
+        ) {
+
             throw new Error(
                 "Invalid glucose value"
             );
         }
+
 
         glucose.textContent =
             currentGlucose;
@@ -1811,35 +1830,55 @@ async function updateGlucose() {
         // =====================================
 
         trend.textContent =
-            glucoseTrendArrow(data.trend);
+            glucoseTrendArrow(
+                data.trend_raw ||
+                data.trend
+            );
 
 
         // =====================================
-        // CHANGE FROM ACTUAL CGM READING
+        // CHANGE
         // =====================================
 
         const difference =
             Number(data.change);
 
-        if (Number.isFinite(difference)) {
+        if (
+            Number.isFinite(
+                difference
+            )
+        ) {
 
             let changeText;
 
+
             if (difference > 0) {
+
                 changeText =
-                    "+" + difference;
+                    "+" +
+                    difference;
+
             }
+
             else if (difference < 0) {
+
                 changeText =
-                    String(difference);
+                    String(
+                        difference
+                    );
+
             }
+
             else {
+
                 changeText =
                     "+0";
             }
 
+
             change.textContent =
                 changeText;
+
 
             localStorage.setItem(
                 "glucoseChange",
@@ -1849,51 +1888,51 @@ async function updateGlucose() {
 
 
         // =====================================
-        // SAVE CURRENT READING
-        // =====================================
-
-        previousGlucose =
-            currentGlucose;
-
-        localStorage.setItem(
-            "previousGlucose",
-            currentGlucose
-        );
-
-
-        // =====================================
         // STATUS
         // =====================================
 
         if (data.timestamp) {
 
             const time =
-                new Date(data.timestamp);
+                new Date(
+                    data.timestamp
+                );
+
 
             status.textContent =
                 "Updated " +
-                time.toLocaleTimeString([], {
-                    hour: "numeric",
-                    minute: "2-digit"
-                });
+                time.toLocaleTimeString(
+                    [],
+                    {
+                        hour:
+                            "numeric",
 
-        } else {
+                        minute:
+                            "2-digit"
+                    }
+                );
 
-            status.textContent =
-                "Sugarmate";
         }
 
+        else {
+
+            status.textContent =
+                "Dexcom";
+        }
+
+
     }
+
     catch (error) {
 
-    console.error(
-        "Sugarmate error:",
-        error
-    );
+        console.error(
+            "Dexcom error:",
+            error
+        );
 
-    // Keep the last successful status visible.
-    // Don't flash "Waiting..." during temporary failures.
-}
+        // Keep the last successful
+        // glucose/status on screen.
+    }
 }
 
 
